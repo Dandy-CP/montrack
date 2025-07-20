@@ -1,0 +1,91 @@
+import 'package:flutter/material.dart';
+
+class Input extends StatefulWidget {
+  const Input({
+    super.key,
+    this.variant = 'text',
+    required this.label,
+    required this.placeholder,
+    this.initialValue,
+    this.isOptional = false,
+    this.suffixIcon,
+    this.prefixIcon,
+    this.onSaved,
+    this.onChanged,
+    this.validator,
+    this.keyboardType = TextInputType.text,
+  });
+
+  final String variant; // 'text' || 'password' || 'multiline'
+  final String label;
+  final String placeholder;
+  final String? initialValue;
+  final bool isOptional;
+  final TextInputType keyboardType;
+  final Widget? suffixIcon;
+  final Widget? prefixIcon;
+  final String? Function(String?)? validator;
+  final void Function(String)? onChanged;
+  final void Function(String?)? onSaved;
+
+  @override
+  State<Input> createState() => _InputState();
+}
+
+class _InputState extends State<Input> {
+  bool isPasswordVisible = true;
+
+  void togglePasswordVisibility() {
+    setState(() {
+      isPasswordVisible = !isPasswordVisible;
+    });
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      spacing: 5,
+      children: [
+        Text(
+          widget.label,
+          style: TextStyle(fontSize: 14, color: Colors.grey[700]),
+        ),
+        TextFormField(
+          initialValue: widget.initialValue,
+          keyboardType: widget.keyboardType,
+          maxLines: widget.variant == 'multiline' ? null : 1,
+          obscureText: widget.variant == 'password' && isPasswordVisible,
+          onChanged: widget.onChanged,
+          onSaved: widget.onSaved,
+          decoration: InputDecoration(
+            hintText: widget.placeholder,
+            suffixIcon: widget.variant == 'password'
+                ? IconButton(
+                    onPressed: () {
+                      togglePasswordVisibility();
+                    },
+                    icon: Icon(
+                      isPasswordVisible
+                          ? Icons.visibility_outlined
+                          : Icons.visibility_off_outlined,
+                    ),
+                  )
+                : widget.suffixIcon,
+            prefixIcon: widget.prefixIcon,
+          ),
+          validator: !widget.isOptional
+              ? widget.validator ??
+                    (String? value) {
+                      if (value == null || value.isEmpty) {
+                        return 'Please enter ${widget.label.toLowerCase()}';
+                      }
+
+                      return null;
+                    }
+              : null,
+        ),
+      ],
+    );
+  }
+}
