@@ -1,8 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
-import 'package:montrack/screen/budgeting/budgeting.dart';
 import 'package:montrack/screen/goals/goals.dart';
 import 'package:montrack/screen/homescreen.dart';
+import 'package:montrack/screen/pocket/pocket.dart';
 import 'package:montrack/screen/profile/profile.dart';
 import 'package:montrack/widget/modules/app_bar.dart';
 import 'package:montrack/widget/modules/navbar.dart';
@@ -23,26 +23,17 @@ class _TabScreenState extends State<TabScreen> {
     });
   }
 
-  final List<Widget> screen = [
-    Homescreen(),
-    BudgetingScreen(),
-    GoalsScreen(),
-    ProfileScreen(),
-  ];
+  void onActionButtonTap() {
+    if (_tabIndex == 0) context.push('/create-transaction');
+    if (_tabIndex == 1) context.push('/create-pocket');
+    if (_tabIndex == 2) context.push('/create-goals');
+  }
 
   AppBarWidget? renderAppBar() {
     if (_tabIndex != 0) {
-      if (_tabIndex == 1) {
-        return AppBarWidget(title: 'Budgeting');
-      }
-
-      if (_tabIndex == 2) {
-        return AppBarWidget(title: 'Goals');
-      }
-
-      if (_tabIndex == 3) {
-        return AppBarWidget(title: 'Profile');
-      }
+      if (_tabIndex == 1) return AppBarWidget(title: 'Pocket');
+      if (_tabIndex == 2) return AppBarWidget(title: 'Goals');
+      if (_tabIndex == 3) return AppBarWidget(title: 'Profile');
     }
 
     return null;
@@ -50,6 +41,13 @@ class _TabScreenState extends State<TabScreen> {
 
   @override
   Widget build(BuildContext context) {
+    final List<Widget> screen = [
+      Homescreen(onTabChange: onTabChange),
+      PocketScreen(),
+      GoalsScreen(),
+      ProfileScreen(),
+    ];
+
     return Scaffold(
       body: Padding(
         padding: EdgeInsetsGeometry.directional(bottom: 20),
@@ -66,7 +64,7 @@ class _TabScreenState extends State<TabScreen> {
               shape: RoundedRectangleBorder(
                 borderRadius: BorderRadius.circular(100),
               ),
-              onPressed: () => context.go('/create-goals'),
+              onPressed: () => onActionButtonTap(),
               child: Icon(Icons.add, color: Colors.white, size: 28),
             )
           : null,

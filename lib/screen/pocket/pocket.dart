@@ -1,26 +1,26 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
-import 'package:montrack/models/goals/goals_list_model.dart';
-import 'package:montrack/service/api/goals_api.dart';
+import 'package:montrack/models/pocket/pocket_list_model.dart';
+import 'package:montrack/service/api/pocket_api.dart';
 import 'package:montrack/widget/elements/skeleton.dart';
 import 'package:montrack/widget/modules/empty_state.dart';
-import 'package:montrack/widget/modules/goals/goal_card.dart';
+import 'package:montrack/widget/modules/pocket/pocket_card.dart';
 
-class GoalsScreen extends ConsumerWidget {
-  const GoalsScreen({super.key});
+class PocketScreen extends ConsumerWidget {
+  const PocketScreen({super.key});
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
-    final AsyncValue<GoalsListResponse> goalsList = ref.watch(
-      getListGoalsProvider(page: 1, limit: 10),
+    final AsyncValue<PocketListResponse> pocketList = ref.watch(
+      getListPocketProvider(page: 1, limit: 10),
     );
 
     Future<void> handleOnRefresh() async {
-      ref.invalidate(getListGoalsProvider(page: 1, limit: 10));
+      ref.invalidate(getListPocketProvider(page: 1, limit: 10));
     }
 
-    Widget listWidgetGoals() {
-      return goalsList.when(
+    Widget listWidgetPocket() {
+      return pocketList.when(
         skipLoadingOnRefresh: false,
         data: (value) {
           if (value.data.isEmpty) {
@@ -31,7 +31,7 @@ class GoalsScreen extends ConsumerWidget {
                 children: [
                   EmptyState(
                     message:
-                        'No goals yet for now, please click the " + " to create a new goal.',
+                        'No pocket yet for now, please click the " + " to create a new pocket.',
                   ),
                 ],
               ),
@@ -42,13 +42,14 @@ class GoalsScreen extends ConsumerWidget {
             spacing: 15,
             children: value.data
                 .map(
-                  (data) => GoalsCard(
-                    goalsId: data.goalsId,
-                    label: data.goalsName,
-                    initialAmount: data.goalsSetAmount,
-                    moneyValue: data.goalsAmount,
-                    description: data.goalsDescription,
-                    progress: data.goalsAmount / data.goalsSetAmount,
+                  (data) => PocketCard(
+                    pocketId: data.pocketId,
+                    label: data.pocketName,
+                    emoji: data.pocketEmoji,
+                    initialAmount: data.pocketSetAmount,
+                    moneyValue: data.pocketAmmount,
+                    description: data.pocketDescription,
+                    progress: data.pocketAmmount / data.pocketSetAmount,
                   ),
                 )
                 .toList(),
@@ -57,13 +58,13 @@ class GoalsScreen extends ConsumerWidget {
         error: (error, trace) => Column(
           spacing: 15,
           children: List.generate(5, (_) {}).map((_) {
-            return SkeletonBox(width: double.infinity, height: 150);
+            return SkeletonBox(width: double.infinity, height: 230);
           }).toList(),
         ),
         loading: () => Column(
           spacing: 15,
           children: List.generate(5, (_) {}).map((_) {
-            return SkeletonBox(width: double.infinity, height: 150);
+            return SkeletonBox(width: double.infinity, height: 230);
           }).toList(),
         ),
       );
@@ -74,7 +75,7 @@ class GoalsScreen extends ConsumerWidget {
       child: SingleChildScrollView(
         physics: AlwaysScrollableScrollPhysics(),
         padding: EdgeInsetsGeometry.directional(top: 20, start: 15, end: 15),
-        child: Column(spacing: 10, children: [listWidgetGoals()]),
+        child: Column(spacing: 10, children: [listWidgetPocket()]),
       ),
     );
   }

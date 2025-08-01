@@ -7,19 +7,21 @@ import 'package:montrack/widget/modules/homescreen/recent_trx.dart';
 import 'package:montrack/widget/modules/homescreen/summary.dart';
 
 class Homescreen extends ConsumerWidget {
-  const Homescreen({super.key});
+  const Homescreen({super.key, required this.onTabChange});
+
+  final void Function(int) onTabChange;
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
     Future<void> handleOnRefresh() async {
       ref.invalidate(getActiveWalletProvider);
-      ref.invalidate(getTransactionListProvider((page: 1, limit: 5)));
+      ref.invalidate(transactionListRequestProvider);
     }
 
     return RefreshIndicator(
       onRefresh: () => handleOnRefresh(),
       child: SingleChildScrollView(
-        padding: EdgeInsetsGeometry.directional(bottom: 20),
+        physics: AlwaysScrollableScrollPhysics(),
         child: Column(
           children: [
             Overview(),
@@ -29,7 +31,13 @@ class Homescreen extends ConsumerWidget {
                 start: 20,
                 end: 20,
               ),
-              child: Column(spacing: 20, children: [Summary(), RecentTrx()]),
+              child: Column(
+                spacing: 20,
+                children: [
+                  Summary(onTabChange: onTabChange),
+                  RecentTrx(),
+                ],
+              ),
             ),
           ],
         ),

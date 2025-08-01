@@ -52,9 +52,10 @@ class LoginState extends ConsumerState<Login> {
         } on DioException catch (error) {
           if (context.mounted) {
             SnackBars.show(
-              context,
-              '${error.response?.data['message'] ?? 'Ops Something Wrong'}',
-              SnackBarsVariant.error,
+              context: context,
+              message:
+                  '${error.response?.data['message'] ?? 'Ops Something Wrong'}',
+              type: SnackBarsVariant.error,
             );
           }
         } finally {
@@ -117,6 +118,7 @@ class LoginState extends ConsumerState<Login> {
                             Input(
                               label: 'Email',
                               placeholder: 'Your Email',
+                              enabled: !_isPending,
                               onSaved: (value) => email = value!,
                             ),
                             Column(
@@ -126,6 +128,7 @@ class LoginState extends ConsumerState<Login> {
                                   label: 'Passowrd',
                                   placeholder: 'Your Password',
                                   variant: 'password',
+                                  enabled: !_isPending,
                                   onSaved: (value) => password = value!,
                                 ),
                                 TextButton(
