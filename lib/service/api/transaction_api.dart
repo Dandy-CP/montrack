@@ -5,19 +5,93 @@ import 'package:riverpod_annotation/riverpod_annotation.dart';
 
 part 'transaction_api.g.dart';
 
-typedef QParams = ({int page, int limit});
+@riverpod
+class TransactionListRequest extends _$TransactionListRequest {
+  static final int _defaultPage = 1;
+  static final int _defaultLimit = 10;
+  static bool _isLoadingNextPage = false;
 
-@Riverpod(keepAlive: true)
-Future<TransactionListResponse> getTransactionList(
-  Ref ref,
-  QParams query,
-) async {
+  @override
+  Future<TransactionListResponse> build({TransactionQuery? query}) async {
+    // Call the initial request for initial data value
+    return _getTransaction(
+      page: _defaultPage,
+      limit: _defaultLimit,
+      query: query ?? TransactionQuery.empty(),
+    );
+  }
+
+  // declare private function to fetch data
+  Future<TransactionListResponse> _getTransaction({
+    int? page,
+    int? limit,
+    required TransactionQuery query,
+  }) async {
+    final Map<String, dynamic> queryParameters = {
+      'page': page,
+      'limit': limit,
+      if (query.transactionType != null)
+        'transactionType': query.transactionType,
+      if (query.transactionFrom != null)
+        'transactionFrom': query.transactionFrom,
+      if (query.startDate != null) 'startDate': query.startDate,
+      if (query.endDate != null) 'endDate': query.endDate,
+    };
+
+    final response = await ref
+        .watch(networkServiceProvider)
+        .get('/transaction/list', queryParameters: queryParameters);
+
+    return TransactionListResponse.fromJson(response.data);
+  }
+
+  Future<void> loadNextPage() async {
+    if (_isLoadingNextPage) return;
+    if (state.value?.meta.isLastPage == true) return;
+
+    final nextPage = (state.value?.meta.currentPage ?? 0) + 1;
+    _isLoadingNextPage = true;
+
+    // Call the next page request
+    final newItems = await _getTransaction(
+      page: nextPage,
+      limit: _defaultLimit,
+      query: query ?? TransactionQuery.empty(),
+    );
+
+    // Update the state with the new data
+    state = AsyncValue.data(
+      state.value!.copyWith(
+        data: [...state.value!.data, ...newItems.data],
+        meta: newItems.meta,
+      ),
+    );
+  }
+}
+
+@riverpod
+class TransactionRequest extends _$TransactionRequest {
+  @override
+  FutureOr<void> build() {}
+
+  Future<String?> createTransaction() async {
+    final response = await ref
+        .watch(networkServiceProvider)
+        .post('/transaction/create', data: {});
+
+    if (response.statusCode == 201) {
+      return 'Success create transaction';
+    }
+
+    return null;
+  }
+}
+
+@riverpod
+Future<TransactionSummaryResponse> getSummaryTransaction(Ref ref) async {
   final response = await ref
       .watch(networkServiceProvider)
-      .get(
-        '/transaction/list',
-        queryParameters: {'page': query.page, 'limit': query.limit},
-      );
+      .get('/transaction/summary');
 
-  return TransactionListResponse.fromJson(response.data);
+  return TransactionSummaryResponse.fromJson(response.data);
 }

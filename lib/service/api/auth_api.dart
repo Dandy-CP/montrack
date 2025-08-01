@@ -1,7 +1,10 @@
 import 'package:dio/dio.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:montrack/config/router.dart';
 import 'package:montrack/models/auth/auth_model.dart';
 import 'package:montrack/providers/network/network_provider.dart';
 import 'package:montrack/providers/storage/secure_storage_provider.dart';
+import 'package:montrack/providers/storage/shared_prefs_provider.dart';
 import 'package:montrack/utils/logger.dart';
 import 'package:riverpod_annotation/riverpod_annotation.dart';
 
@@ -9,6 +12,29 @@ part 'auth_api.g.dart';
 
 typedef LoginPayload = ({String email, String password});
 typedef SignUpPayload = ({String name, String email, String password});
+
+@riverpod
+Future<void> initialStartUp(Ref ref) async {
+  final tokenValue = await ref.watch(secureStorageProvider).get('access_token');
+
+  final response = await ref
+      .watch(networkServiceProvider)
+      .get('/auth/logedin-user');
+
+  if (response.statusCode == 200 && tokenValue != null) {
+    router.replace('/home');
+    return;
+  }
+}
+
+@Riverpod(keepAlive: true)
+Future<GetLoggedInUserResponse> getLoggedUser(Ref ref) async {
+  final response = await ref
+      .watch(networkServiceProvider)
+      .get('/auth/logedin-user');
+
+  return GetLoggedInUserResponse.fromJson(response.data);
+}
 
 @riverpod
 class Auth extends _$Auth {
@@ -41,12 +67,31 @@ class Auth extends _$Auth {
     return AuthSignUpResponse.fromJson(response.data);
   }
 
+  Future<String?> signOut() async {
+    final response = await ref
+        .watch(networkServiceProvider)
+        .post('/auth/logout');
+
+    if (response.statusCode == 201) {
+      final storage = ref.watch(secureStorageProvider);
+      await storage.delete('access_token');
+      await storage.delete('refresh_token');
+
+      return 'Success logout';
+    }
+
+    return null;
+  }
+
   Future handleRefreshToken(
     DioException err,
     ErrorInterceptorHandler handler,
   ) async {
     final storage = ref.watch(secureStorageProvider);
     final refreshTokenKey = await storage.get('refresh_token');
+
+    final sharedPrefs = ref.watch(sharedPrefsProvider);
+    final isHasOnboarding = await sharedPrefs.getBool('hasOnBoarding');
 
     if (err.response?.statusCode == 401 && refreshTokenKey != null) {
       logger.i('Token has invalid, trying to request new token');
@@ -61,7 +106,7 @@ class Auth extends _$Auth {
 
         final resData = RefreshTokenResponse.fromJson(response.data);
 
-        if (response.statusCode == 200) {
+        if (response.statusCode == 201) {
           logger.i('Success create new token');
 
           final newAccessToken = resData.data.accessToken;
@@ -89,8 +134,18 @@ class Auth extends _$Auth {
         await storage.delete('access_token');
         await storage.delete('refresh_token');
 
+        // replace screen to login
+        router.go('/login');
+
         // Continue process with error rejection
         return handler.next(error);
+      }
+    } else {
+      // else condition when refresh token is not available
+      if (isHasOnboarding != null && isHasOnboarding) {
+        router.replace('/login');
+      } else {
+        router.replace('/onboarding');
       }
     }
   }

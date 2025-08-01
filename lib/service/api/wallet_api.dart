@@ -6,8 +6,6 @@ import 'package:riverpod_annotation/riverpod_annotation.dart';
 
 part 'wallet_api.g.dart';
 
-typedef QParams = ({int page, int limit});
-
 @Riverpod(keepAlive: true)
 Future<ActiveWalletResponse> getActiveWallet(Ref ref) async {
   final response = await ref
@@ -18,12 +16,16 @@ Future<ActiveWalletResponse> getActiveWallet(Ref ref) async {
 }
 
 @Riverpod(keepAlive: true)
-Future<WalletListResponse> getWalletList(Ref ref, QParams query) async {
+Future<WalletListResponse> getWalletList(
+  Ref ref, {
+  int? page,
+  int? limit,
+}) async {
   final response = await ref
       .watch(networkServiceProvider)
       .get(
         '/wallet/list',
-        queryParameters: {"page": query.page, "limit": query.limit},
+        queryParameters: {"page": page ?? 1, "limit": limit ?? 10},
       );
 
   return WalletListResponse.fromJson(response.data);
