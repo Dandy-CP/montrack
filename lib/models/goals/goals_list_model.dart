@@ -2,41 +2,41 @@ import 'package:freezed_annotation/freezed_annotation.dart';
 import 'package:montrack/models/meta_model.dart';
 import 'package:montrack/models/transaction/transaction_model.dart';
 
-part 'pocket_list_model.freezed.dart';
-part 'pocket_list_model.g.dart';
+part 'goals_list_model.freezed.dart';
+part 'goals_list_model.g.dart';
 
 @freezed
-abstract class PocketListResponse with _$PocketListResponse {
-  const factory PocketListResponse({
+abstract class GoalsListResponse with _$GoalsListResponse {
+  const factory GoalsListResponse({
     @JsonKey(name: "statusCode") required int statusCode,
     @JsonKey(name: "message") required String message,
     @JsonKey(name: "timeStamp") required String timeStamp,
-    @JsonKey(name: "data") required List<ListPocketData> data,
+    @JsonKey(name: "data") required List<GoalsListData> data,
     @JsonKey(name: "meta") required Meta meta,
-  }) = _PocketListResponse;
+  }) = _GoalsListResponse;
 
-  factory PocketListResponse.fromJson(Map<String, dynamic> json) =>
-      _$PocketListResponseFromJson(json);
+  factory GoalsListResponse.fromJson(Map<String, dynamic> json) =>
+      _$GoalsListResponseFromJson(json);
 }
 
 @freezed
-abstract class ListPocketData with _$ListPocketData {
-  const factory ListPocketData({
-    @JsonKey(name: "pocket_id") required String pocketId,
-    @JsonKey(name: "pocket_name") required String pocketName,
-    @JsonKey(name: "pocket_emoji") required String pocketEmoji,
-    @JsonKey(name: "pocket_description") required String pocketDescription,
-    @JsonKey(name: "pocket_ammount") required int pocketAmmount,
-    @JsonKey(name: 'pocket_set_amount') required int pocketSetAmount,
+abstract class GoalsListData with _$GoalsListData {
+  const factory GoalsListData({
+    @JsonKey(name: "goals_id") required String goalsId,
+    @JsonKey(name: "goals_name") required String goalsName,
+    @JsonKey(name: "goals_description") required String goalsDescription,
+    @JsonKey(name: "goals_set_amount") required int goalsSetAmount,
+    @JsonKey(name: "goals_amount") required int goalsAmount,
+    @JsonKey(name: "goals_attachment") required String goalsAttachment,
     @JsonKey(name: "wallet_owner_id") required String walletOwnerId,
     @JsonKey(name: "created_at") required String createdAt,
-    @JsonKey(name: "pocket_history")
-    required List<TransactionListData> pocketHistory,
+    @JsonKey(name: "goals_history")
+    required List<TransactionListData> goalsHistory,
     @JsonKey(name: "wallet_owner") required WalletOwner walletOwner,
-  }) = _ListPocketData;
+  }) = _GoalsListData;
 
-  factory ListPocketData.fromJson(Map<String, dynamic> json) =>
-      _$ListPocketDataFromJson(json);
+  factory GoalsListData.fromJson(Map<String, dynamic> json) =>
+      _$GoalsListDataFromJson(json);
 }
 
 @freezed

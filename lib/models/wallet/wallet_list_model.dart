@@ -9,6 +9,7 @@ abstract class WalletListResponse with _$WalletListResponse {
   const factory WalletListResponse({
     @JsonKey(name: "statusCode") required int statusCode,
     @JsonKey(name: "message") required String message,
+    @JsonKey(name: "timeStamp") required String timeStamp,
     @JsonKey(name: "data") required List<WalletListData> data,
     @JsonKey(name: "meta") required Meta meta,
   }) = _WalletListResponse;
@@ -56,8 +57,10 @@ abstract class UserPocket with _$UserPocket {
   const factory UserPocket({
     @JsonKey(name: "pocket_id") required String pocketId,
     @JsonKey(name: "pocket_name") required String pocketName,
+    @JsonKey(name: "pocket_emoji") required String pocketEmoji,
     @JsonKey(name: "pocket_description") required String pocketDescription,
     @JsonKey(name: "pocket_ammount") required int pocketAmmount,
+    @JsonKey(name: 'pocket_set_amount') required int pocketSetAmount,
     @JsonKey(name: "wallet_owner_id") required String walletOwnerId,
     @JsonKey(name: "created_at") required String createdAt,
   }) = _UserPocket;

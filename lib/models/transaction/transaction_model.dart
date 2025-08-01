@@ -39,3 +39,40 @@ abstract class TransactionListData with _$TransactionListData {
   factory TransactionListData.fromJson(Map<String, dynamic> json) =>
       _$TransactionListDataFromJson(json);
 }
+
+@freezed
+abstract class TransactionSummaryResponse with _$TransactionSummaryResponse {
+  const factory TransactionSummaryResponse({
+    @JsonKey(name: "statusCode") required int statusCode,
+    @JsonKey(name: "message") required String message,
+    @JsonKey(name: "timeStamp") required String timeStamp,
+    @JsonKey(name: "data") required SummaryData data,
+    @JsonKey(name: "meta") required Meta meta,
+  }) = _TransactionSummaryResponse;
+
+  factory TransactionSummaryResponse.fromJson(Map<String, dynamic> json) =>
+      _$TransactionSummaryResponseFromJson(json);
+}
+
+@freezed
+abstract class SummaryData with _$SummaryData {
+  const factory SummaryData({
+    @JsonKey(name: "income") required int income,
+    @JsonKey(name: "expense") required int expense,
+  }) = _SummaryData;
+
+  factory SummaryData.fromJson(Map<String, dynamic> json) =>
+      _$SummaryDataFromJson(json);
+}
+
+@freezed
+abstract class TransactionQuery with _$TransactionQuery {
+  const factory TransactionQuery({
+    String? transactionType,
+    String? transactionFrom,
+    String? startDate,
+    String? endDate,
+  }) = _TransactionQuery;
+
+  factory TransactionQuery.empty() => const TransactionQuery();
+}

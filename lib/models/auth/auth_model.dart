@@ -76,3 +76,30 @@ abstract class RefreshTokenData with _$RefreshTokenData {
   factory RefreshTokenData.fromJson(Map<String, dynamic> json) =>
       _$RefreshTokenDataFromJson(json);
 }
+
+@freezed
+abstract class GetLoggedInUserResponse with _$GetLoggedInUserResponse {
+  const factory GetLoggedInUserResponse({
+    @JsonKey(name: "statusCode") required int statusCode,
+    @JsonKey(name: "message") required String message,
+    @JsonKey(name: "timeStamp") required String timeStamp,
+    @JsonKey(name: "data") required GetLoggedInUserData data,
+  }) = _GetLoggedInUserResponse;
+
+  factory GetLoggedInUserResponse.fromJson(Map<String, dynamic> json) =>
+      _$GetLoggedInUserResponseFromJson(json);
+}
+
+@freezed
+abstract class GetLoggedInUserData with _$GetLoggedInUserData {
+  const factory GetLoggedInUserData({
+    @JsonKey(name: 'user_id') required String userId,
+    @JsonKey(name: "name") required String name,
+    @JsonKey(name: "email") required String email,
+    @JsonKey(name: "access_token") required String accessToken,
+    @JsonKey(name: "refresh_token") required String refreshToken,
+  }) = _GetLoggedInUserData;
+
+  factory GetLoggedInUserData.fromJson(Map<String, dynamic> json) =>
+      _$GetLoggedInUserDataFromJson(json);
+}
