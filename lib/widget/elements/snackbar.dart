@@ -3,16 +3,11 @@ import 'package:flutter/material.dart';
 enum SnackBarsVariant { success, warning, error }
 
 class SnackBars {
-  final String message;
-  final SnackBarsVariant? type;
-
-  SnackBars({required this.message, this.type});
-
-  static void show(
-    BuildContext context,
-    String message,
+  static void show({
+    required BuildContext context,
+    required String message,
     SnackBarsVariant? type,
-  ) {
+  }) {
     Color colors;
 
     switch (type) {

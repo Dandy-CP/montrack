@@ -3,6 +3,7 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:montrack/models/transaction/transaction_model.dart';
 import 'package:montrack/service/api/transaction_api.dart';
 import 'package:montrack/widget/elements/skeleton.dart';
+import 'package:montrack/widget/modules/empty_state.dart';
 import 'package:montrack/widget/modules/homescreen/trx_card.dart';
 
 class RecentTrx extends ConsumerWidget {
@@ -11,23 +12,35 @@ class RecentTrx extends ConsumerWidget {
   @override
   Widget build(BuildContext context, WidgetRef ref) {
     final AsyncValue<TransactionListResponse> transaction = ref.watch(
-      getTransactionListProvider((page: 1, limit: 5)),
+      transactionListRequestProvider(),
     );
 
     Widget trxWidgetList() {
       return transaction.when(
         skipLoadingOnRefresh: false,
-        data: (value) => Column(
-          spacing: 15,
-          children: value.data.map((trx) {
-            return TrxCard(
-              trxName: trx.transactionName,
-              trxAmount: trx.transactionAmmount,
-              trxType: trx.transactionType,
-              trxDate: trx.transactionDate,
+        data: (value) {
+          if (value.data.isEmpty) {
+            return SizedBox(
+              height: 200,
+              child: EmptyState(
+                message:
+                    'No transaction yet for now, please click the " + " to create a new transaction.',
+              ),
             );
-          }).toList(),
-        ),
+          }
+
+          return Column(
+            spacing: 15,
+            children: value.data.map((trx) {
+              return TrxCard(
+                trxName: trx.transactionName,
+                trxAmount: trx.transactionAmmount,
+                trxType: trx.transactionType,
+                trxDate: trx.transactionDate,
+              );
+            }).toList(),
+          );
+        },
         error: (err, stack) => Column(
           spacing: 15,
           children: List.generate(5, (_) {}).map((_) {

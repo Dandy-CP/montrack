@@ -6,6 +6,7 @@ class Input extends StatefulWidget {
     this.variant = 'text',
     required this.label,
     required this.placeholder,
+    this.enabled = true,
     this.initialValue,
     this.isOptional = false,
     this.suffixIcon,
@@ -19,6 +20,7 @@ class Input extends StatefulWidget {
   final String variant; // 'text' || 'password' || 'multiline'
   final String label;
   final String placeholder;
+  final bool enabled;
   final String? initialValue;
   final bool isOptional;
   final TextInputType keyboardType;
@@ -52,6 +54,7 @@ class _InputState extends State<Input> {
           style: TextStyle(fontSize: 14, color: Colors.grey[700]),
         ),
         TextFormField(
+          enabled: widget.enabled,
           initialValue: widget.initialValue,
           keyboardType: widget.keyboardType,
           maxLines: widget.variant == 'multiline' ? null : 1,
@@ -79,6 +82,10 @@ class _InputState extends State<Input> {
                     (String? value) {
                       if (value == null || value.isEmpty) {
                         return 'Please enter ${widget.label.toLowerCase()}';
+                      }
+
+                      if (widget.variant == 'password' && value.length < 8) {
+                        return 'Password must be 8 character';
                       }
 
                       return null;

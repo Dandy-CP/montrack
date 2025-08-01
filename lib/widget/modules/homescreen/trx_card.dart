@@ -9,12 +9,16 @@ class TrxCard extends StatefulWidget {
     required this.trxAmount,
     required this.trxType,
     required this.trxDate,
+    this.cardColor = 0xFFE5F0FF,
+    this.showShadow = false,
   });
 
   final String trxName;
   final int trxAmount;
   final String trxDate;
   final String trxType;
+  final int cardColor;
+  final bool showShadow;
 
   @override
   State<TrxCard> createState() => _TrxCardState();
@@ -30,8 +34,18 @@ class _TrxCardState extends State<TrxCard> {
     return Container(
       width: double.infinity,
       decoration: BoxDecoration(
-        color: Color(0xFFE5F0FF),
+        color: Color(widget.cardColor),
         borderRadius: BorderRadius.circular(12),
+        boxShadow: widget.showShadow
+            ? [
+                BoxShadow(
+                  color: Color.fromRGBO(149, 157, 165, 0.2),
+                  blurRadius: 24,
+                  spreadRadius: 0,
+                  offset: Offset(0, 8),
+                ),
+              ]
+            : null,
       ),
       child: Padding(
         padding: EdgeInsetsGeometry.all(18),

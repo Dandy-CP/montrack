@@ -21,9 +21,9 @@ class Navbar extends StatelessWidget {
           label: 'Home',
         ),
         NavigationDestination(
-          icon: Icon(Icons.explore_outlined),
-          selectedIcon: Icon(Icons.explore, color: Colors.white),
-          label: 'Budgeting',
+          icon: Icon(Icons.wallet_outlined),
+          selectedIcon: Icon(Icons.wallet, color: Colors.white),
+          label: 'Pocket',
         ),
         NavigationDestination(
           icon: Icon(Icons.flag_outlined),

@@ -1,43 +1,61 @@
+import 'package:dio/dio.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
-import 'package:montrack/providers/storage/secure_storage_provider.dart';
-import 'package:montrack/widget/elements/button.dart';
+import 'package:montrack/providers/provider_observer.dart';
+import 'package:montrack/service/api/auth_api.dart';
+import 'package:montrack/widget/elements/dialog.dart';
+import 'package:montrack/widget/elements/snackbar.dart';
 
-class ProfileMenu extends ConsumerWidget {
+class ProfileMenu extends ConsumerStatefulWidget {
   const ProfileMenu({super.key});
 
   @override
-  Widget build(BuildContext context, WidgetRef ref) {
-    final storage = ref.watch(secureStorageProvider);
+  ConsumerState<ProfileMenu> createState() => _ProfileMenuState();
+}
 
-    void handleLogout() {
-      showDialog(
-        context: context,
-        builder: (context) => AlertDialog(
-          title: Text('Are you sure to Log Out?'),
-          content: Text('Your wil log out from your account.'),
-          actionsAlignment: MainAxisAlignment.spaceBetween,
-          actions: [
-            Button(
-              label: 'No',
-              variant: 'outlined',
-              width: 130,
-              onPressed: () => Navigator.pop(context),
-            ),
-            Button(
-              label: 'Yes',
-              width: 130,
-              onPressed: () async => {
-                await storage.delete('access_token'),
-                await storage.delete('refresh_token'),
+class _ProfileMenuState extends ConsumerState<ProfileMenu> {
+  bool isPending = false;
 
-                if (context.mounted) context.go('/login'),
-              },
-            ),
-          ],
-        ),
-      );
+  @override
+  Widget build(BuildContext context) {
+    final authRequest = ref.watch(authProvider.notifier);
+
+    void handleLogout() async {
+      setState(() {
+        isPending = true;
+      });
+
+      try {
+        final response = await authRequest.signOut();
+
+        if (response != null) {
+          if (context.mounted) {
+            context.go('/login');
+
+            SnackBars.show(
+              context: context,
+              message: 'You have been logged out',
+            );
+          }
+
+          // Invalidate all providers when success logout
+          ProviderObservers.invalidateAllProviders(ref);
+        }
+      } on DioException catch (error) {
+        if (context.mounted) {
+          SnackBars.show(
+            context: context,
+            message:
+                '${error.response?.data['message'] ?? 'Ops Something Wrong'}',
+            type: SnackBarsVariant.error,
+          );
+        }
+      } finally {
+        setState(() {
+          isPending = false;
+        });
+      }
     }
 
     final List<Widget> profileMenu = [
@@ -91,7 +109,14 @@ class ProfileMenu extends ConsumerWidget {
       ),
       InkWell(
         onTap: () {
-          handleLogout();
+          Dialogs.show(
+            context: context,
+            title: 'Are you sure to Log Out?',
+            content: 'Your wil log out from your account.',
+            onYesPressed: () {
+              handleLogout();
+            },
+          );
         },
         child: Padding(
           padding: EdgeInsets.all(5),

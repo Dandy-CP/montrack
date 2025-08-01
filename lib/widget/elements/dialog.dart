@@ -9,34 +9,42 @@ class Dialogs {
     bool isPending = false,
     void Function()? onYesPressed,
   }) {
-    if (context.mounted) {
-      showDialog(
-        context: context,
-        builder: (context) => AlertDialog(
-          title: Text(title),
-          content: Text(content),
-          actionsAlignment: MainAxisAlignment.spaceBetween,
-          actions: [
-            Button(
-              label: 'No',
-              variant: 'outlined',
-              width: 130,
-              isLoading: isPending,
-              disabled: isPending,
-              onPressed: () => Navigator.pop(context),
-            ),
-            Button(
-              label: 'Yes',
-              width: 130,
-              isLoading: isPending,
-              disabled: isPending,
-              onPressed: () {
-                onYesPressed!();
-              },
-            ),
-          ],
-        ),
-      );
-    }
+    showDialog(
+      context: context,
+      builder: (context) => StatefulBuilder(
+        builder: (context, setState) {
+          return AlertDialog(
+            title: Text(title),
+            content: Text(content),
+            actionsAlignment: MainAxisAlignment.spaceBetween,
+            actions: [
+              Button(
+                label: 'No',
+                variant: 'outlined',
+                width: 130,
+                isLoading: isPending,
+                disabled: isPending,
+                onPressed: () => Navigator.pop(context),
+              ),
+              Button(
+                label: 'Yes',
+                width: 130,
+                isLoading: isPending,
+                disabled: isPending,
+                onPressed: () {
+                  setState(() {
+                    isPending = true;
+                  });
+
+                  if (onYesPressed != null) {
+                    onYesPressed();
+                  }
+                },
+              ),
+            ],
+          );
+        },
+      ),
+    );
   }
 }
