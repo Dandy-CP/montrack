@@ -1,10 +1,14 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_dotenv/flutter_dotenv.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:montrack/config/router.dart';
 import 'package:montrack/config/theme.dart';
+import 'package:montrack/providers/provider_observer.dart';
 
 void main() async {
-  runApp(ProviderScope(child: Index()));
+  WidgetsFlutterBinding.ensureInitialized();
+  await dotenv.load(fileName: ".env");
+  runApp(ProviderScope(observers: [ProviderObservers()], child: Index()));
 }
 
 class Index extends StatelessWidget {
@@ -16,7 +20,7 @@ class Index extends StatelessWidget {
       debugShowCheckedModeBanner: false,
       title: 'Montrack',
       theme: themeConfig,
-      routerConfig: routerList,
+      routerConfig: router,
     );
   }
 }
