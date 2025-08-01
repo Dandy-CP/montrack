@@ -1,4 +1,5 @@
 import 'package:dio/dio.dart';
+import 'package:flutter_dotenv/flutter_dotenv.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:montrack/providers/network/network_interceptor.dart';
 import 'package:montrack/providers/storage/secure_storage_provider.dart';
@@ -11,7 +12,7 @@ part 'network_provider.g.dart';
 Dio networkService(Ref ref) {
   final dio = Dio(
     BaseOptions(
-      baseUrl: 'https://montrack-service.vercel.app',
+      baseUrl: dotenv.env['BASE_URL_API'] ?? '',
       connectTimeout: Duration(seconds: 60),
       receiveTimeout: Duration(seconds: 60),
       sendTimeout: Duration(seconds: 10),

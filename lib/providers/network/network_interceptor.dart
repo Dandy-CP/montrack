@@ -14,12 +14,16 @@ final class NetworkInterceptor extends Interceptor {
     RequestOptions options,
     RequestInterceptorHandler handler,
   ) async {
-    logger.i('REQUEST[${options.method}] => PATH: ${options.path}');
+    logger.i(
+      'REQUEST[${options.method}] => PATH: ${options.path} QUERY: ${options.queryParameters}',
+    );
 
     final accessTokenKey = await _flutterSecureStorage.get('access_token');
 
-    // Set header config each request
-    options.headers['Authorization'] = 'Bearer $accessTokenKey';
+    if (accessTokenKey != null) {
+      // Set header config each request
+      options.headers['Authorization'] = 'Bearer $accessTokenKey';
+    }
 
     super.onRequest(options, handler);
   }
@@ -27,7 +31,7 @@ final class NetworkInterceptor extends Interceptor {
   @override
   void onResponse(Response response, ResponseInterceptorHandler handler) {
     logger.i(
-      'RESPONSE[${response.statusCode}] => PATH: ${response.requestOptions.path}',
+      'RESPONSE[${response.statusCode}] => PATH: ${response.requestOptions.path} QUERY: ${response.requestOptions.queryParameters}',
     );
 
     super.onResponse(response, handler);
@@ -36,7 +40,7 @@ final class NetworkInterceptor extends Interceptor {
   @override
   Future onError(DioException err, ErrorInterceptorHandler handler) async {
     logger.e(
-      'ERROR[${err.response?.statusCode}] => PATH: ${err.requestOptions.path}',
+      'ERROR[${err.response?.statusCode}] => PATH: ${err.requestOptions.path} QUERY: ${err.requestOptions.queryParameters}',
       error: err.response?.data ?? err.message,
     );
 
