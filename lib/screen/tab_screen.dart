@@ -25,8 +25,8 @@ class _TabScreenState extends State<TabScreen> {
 
   void onActionButtonTap() {
     if (_tabIndex == 0) context.push('/create-transaction');
-    if (_tabIndex == 1) context.push('/create-pocket');
-    if (_tabIndex == 2) context.push('/create-goals');
+    if (_tabIndex == 1) context.push('/pocket/create');
+    if (_tabIndex == 2) context.push('/goals/create');
   }
 
   AppBarWidget? renderAppBar() {

@@ -10,14 +10,16 @@ import 'package:montrack/widget/modules/app_bar.dart';
 import 'package:montrack/widget/modules/empty_state.dart';
 import 'package:montrack/widget/modules/homescreen/trx_card.dart';
 
-class IncomeScreen extends ConsumerStatefulWidget {
-  const IncomeScreen({super.key});
+class SpendingScreen extends ConsumerStatefulWidget {
+  const SpendingScreen({super.key, required this.transactionType});
+
+  final String transactionType;
 
   @override
-  ConsumerState<IncomeScreen> createState() => _IncomeScreenState();
+  ConsumerState<SpendingScreen> createState() => _SpendingScreenState();
 }
 
-class _IncomeScreenState extends ConsumerState<IncomeScreen> {
+class _SpendingScreenState extends ConsumerState<SpendingScreen> {
   DateTimeRange? selectedDateRange;
   String? startDate;
   String? endDate;
@@ -28,7 +30,7 @@ class _IncomeScreenState extends ConsumerState<IncomeScreen> {
     final AsyncValue<TransactionListResponse> transactionData = ref.watch(
       transactionListRequestProvider(
         query: TransactionQuery(
-          transactionType: 'INCOME',
+          transactionType: widget.transactionType,
           startDate: startDate,
           endDate: endDate,
         ),
@@ -38,7 +40,7 @@ class _IncomeScreenState extends ConsumerState<IncomeScreen> {
     final TransactionListRequest transactionRequest = ref.watch(
       transactionListRequestProvider(
         query: TransactionQuery(
-          transactionType: 'INCOME',
+          transactionType: widget.transactionType,
           startDate: startDate,
           endDate: endDate,
         ),
@@ -49,7 +51,7 @@ class _IncomeScreenState extends ConsumerState<IncomeScreen> {
       ref.invalidate(
         transactionListRequestProvider(
           query: TransactionQuery(
-            transactionType: 'INCOME',
+            transactionType: widget.transactionType,
             startDate: startDate,
             endDate: endDate,
           ),
@@ -105,7 +107,7 @@ class _IncomeScreenState extends ConsumerState<IncomeScreen> {
 
     return Scaffold(
       appBar: AppBarWidget(
-        title: 'Income',
+        title: widget.transactionType.toLowerCase(),
         showLeading: true,
         onBack: () {
           context.pop();

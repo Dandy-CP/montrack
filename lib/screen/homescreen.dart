@@ -16,6 +16,7 @@ class Homescreen extends ConsumerWidget {
     Future<void> handleOnRefresh() async {
       ref.invalidate(getActiveWalletProvider);
       ref.invalidate(transactionListRequestProvider);
+      ref.invalidate(getTransactionSummaryProvider);
     }
 
     return RefreshIndicator(
@@ -24,7 +25,7 @@ class Homescreen extends ConsumerWidget {
         physics: AlwaysScrollableScrollPhysics(),
         child: Column(
           children: [
-            Overview(),
+            Overview(onTabChange: onTabChange),
             Padding(
               padding: EdgeInsetsGeometry.directional(
                 top: 20,

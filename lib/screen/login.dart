@@ -2,6 +2,7 @@ import 'package:dio/dio.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
+import 'package:montrack/models/auth/auth_model.dart';
 import 'package:montrack/providers/storage/secure_storage_provider.dart';
 import 'package:montrack/service/api/auth_api.dart';
 import 'package:montrack/widget/elements/button.dart';
@@ -41,13 +42,22 @@ class LoginState extends ConsumerState<Login> {
             password: password,
           ));
 
-          final data = response.data;
+          if (response.data['message'].contains('2FA')) {
+            if (context.mounted) {
+              context.go(
+                Uri(
+                  path: '/otp',
+                  queryParameters: {'userId': response.data['data']['userId']},
+                ).toString(),
+              );
+            }
+          } else {
+            final value = AuthLoginResponse.fromJson(response.data);
 
-          storage.write('access_token', data.accessToken);
-          storage.write('refresh_token', data.refreshToken);
+            storage.write('access_token', value.data.accessToken);
+            storage.write('refresh_token', value.data.refreshToken);
 
-          if (context.mounted) {
-            context.replace('/home');
+            if (context.mounted) context.replace('/home');
           }
         } on DioException catch (error) {
           if (context.mounted) {
