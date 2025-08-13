@@ -8,13 +8,12 @@ class ProfileScreen extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Padding(
-      padding: EdgeInsetsGeometry.all(30),
+      padding: EdgeInsetsGeometry.all(25),
       child: Column(
-        spacing: 20,
+        mainAxisAlignment: MainAxisAlignment.spaceBetween,
         children: [
-          NameCard(),
-          ProfileMenu(),
-          Text('v0.1', style: TextStyle(color: Colors.grey.shade500)),
+          Column(spacing: 40, children: [NameCard(), ProfileMenu()]),
+          Text('v1.0', style: TextStyle(color: Colors.grey.shade500)),
         ],
       ),
     );
