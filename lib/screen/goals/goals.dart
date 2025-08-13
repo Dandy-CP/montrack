@@ -4,6 +4,7 @@ import 'package:montrack/models/goals/goals_list_model.dart';
 import 'package:montrack/service/api/goals_api.dart';
 import 'package:montrack/widget/elements/skeleton.dart';
 import 'package:montrack/widget/modules/empty_state.dart';
+import 'package:montrack/widget/modules/error_view.dart';
 import 'package:montrack/widget/modules/goals/goal_card.dart';
 
 class GoalsScreen extends ConsumerWidget {
@@ -54,12 +55,7 @@ class GoalsScreen extends ConsumerWidget {
                 .toList(),
           );
         },
-        error: (error, trace) => Column(
-          spacing: 15,
-          children: List.generate(5, (_) {}).map((_) {
-            return SkeletonBox(width: double.infinity, height: 150);
-          }).toList(),
-        ),
+        error: (error, trace) => ErrorView(onTap: () => handleOnRefresh()),
         loading: () => Column(
           spacing: 15,
           children: List.generate(5, (_) {}).map((_) {
