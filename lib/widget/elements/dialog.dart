@@ -5,8 +5,7 @@ class Dialogs {
   static void show({
     required BuildContext context,
     required String title,
-    required String content,
-    bool isPending = false,
+    String? content,
     void Function()? onYesPressed,
   }) {
     showDialog(
@@ -15,30 +14,24 @@ class Dialogs {
         builder: (context, setState) {
           return AlertDialog(
             title: Text(title),
-            content: Text(content),
+            content: content != null ? Text(content) : null,
             actionsAlignment: MainAxisAlignment.spaceBetween,
             actions: [
               Button(
                 label: 'No',
                 variant: 'outlined',
                 width: 130,
-                isLoading: isPending,
-                disabled: isPending,
                 onPressed: () => Navigator.pop(context),
               ),
               Button(
                 label: 'Yes',
                 width: 130,
-                isLoading: isPending,
-                disabled: isPending,
                 onPressed: () {
-                  setState(() {
-                    isPending = true;
-                  });
-
                   if (onYesPressed != null) {
                     onYesPressed();
                   }
+
+                  Navigator.pop(context);
                 },
               ),
             ],

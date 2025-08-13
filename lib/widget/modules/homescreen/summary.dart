@@ -1,29 +1,47 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
+import 'package:montrack/models/transaction/transaction_model.dart';
 import 'package:montrack/models/wallet/active_wallet_model.dart';
+import 'package:montrack/service/api/transaction_api.dart';
 import 'package:montrack/service/api/wallet_api.dart';
 import 'package:montrack/utils/formated_currency.dart';
+import 'package:montrack/utils/get_date.dart';
+import 'package:montrack/widget/elements/date_range_picker.dart';
 import 'package:montrack/widget/elements/skeleton.dart';
 import 'package:montrack/widget/modules/homescreen/summary_card.dart';
 
-class Summary extends ConsumerWidget {
+class Summary extends ConsumerStatefulWidget {
   const Summary({super.key, required this.onTabChange});
 
   final void Function(int) onTabChange;
 
   @override
-  Widget build(BuildContext context, WidgetRef ref) {
+  ConsumerState<Summary> createState() => _SummaryState();
+}
+
+class _SummaryState extends ConsumerState<Summary> {
+  DateTimeRange? selectedDateRange;
+  String? startDate;
+  String? endDate;
+  String selectedFilter = 'All Time';
+
+  @override
+  Widget build(BuildContext context) {
     final AsyncValue<ActiveWalletResponse> activeWallet = ref.watch(
       getActiveWalletProvider,
     );
 
-    final AsyncValue<int> income = activeWallet.whenData(
-      (value) => value.data.summary.income,
+    final AsyncValue<TransactionSummaryResponse> summary = ref.watch(
+      getTransactionSummaryProvider(startDate: startDate, endDate: endDate),
     );
 
-    final AsyncValue<int> expense = activeWallet.whenData(
-      (value) => value.data.summary.expense,
+    final AsyncValue<int> income = summary.whenData(
+      (value) => value.data.income,
+    );
+
+    final AsyncValue<int> expense = summary.whenData(
+      (value) => value.data.expense,
     );
 
     final AsyncValue<int> pocketLength = activeWallet.whenData(
@@ -38,9 +56,78 @@ class Summary extends ConsumerWidget {
       crossAxisAlignment: CrossAxisAlignment.start,
       spacing: 25,
       children: [
-        Text(
-          'Summary',
-          style: TextStyle(fontSize: 16, fontWeight: FontWeight.bold),
+        Row(
+          mainAxisAlignment: MainAxisAlignment.spaceBetween,
+          children: [
+            Text(
+              'Summary',
+              style: TextStyle(fontSize: 16, fontWeight: FontWeight.bold),
+            ),
+            PopupMenuButton(
+              icon: Row(
+                children: [
+                  Text(selectedFilter, style: TextStyle(fontSize: 16)),
+                  Icon(Icons.keyboard_arrow_down),
+                ],
+              ),
+              itemBuilder: (BuildContext context) => <PopupMenuEntry>[
+                PopupMenuItem(
+                  value: 0,
+                  child: Text('All Time'),
+                  onTap: () {
+                    setState(() {
+                      selectedFilter = 'All Time';
+                      selectedDateRange = null;
+                      startDate = null;
+                      endDate = null;
+                    });
+                  },
+                ),
+                PopupMenuItem(
+                  value: 1,
+                  child: Text('This Week'),
+                  onTap: () => GetDate.thisWeek(
+                    onSelected: (value) {
+                      setState(() {
+                        selectedFilter = 'This Week';
+                        startDate = value['startDate'].toString().split(' ')[0];
+                        endDate = value['endDate'].toString().split(' ')[0];
+                      });
+                    },
+                  ),
+                ),
+                PopupMenuItem(
+                  value: 0,
+                  child: Text('This Month'),
+                  onTap: () => GetDate.thisMonth(
+                    onSelected: (value) {
+                      setState(() {
+                        selectedFilter = 'This Month';
+                        startDate = value['startDate'].toString().split(' ')[0];
+                        endDate = value['endDate'].toString().split(' ')[0];
+                      });
+                    },
+                  ),
+                ),
+                PopupMenuItem(
+                  value: 0,
+                  child: Text('Custom Date'),
+                  onTap: () => DateRangePicker.show(
+                    context: context,
+                    selectedDateRange: selectedDateRange,
+                    onDatePicked: (value) {
+                      setState(() {
+                        selectedDateRange = value;
+                        startDate = value.start.toString().split(' ')[0];
+                        endDate = value.end.toString().split(' ')[0];
+                        selectedFilter = 'Custom Date';
+                      });
+                    },
+                  ),
+                ),
+              ],
+            ),
+          ],
         ),
         SizedBox(
           width: double.infinity,
@@ -51,7 +138,12 @@ class Summary extends ConsumerWidget {
               SummaryCard(
                 label: 'Income',
                 emoji: '📉',
-                onTap: () => context.push('/income'),
+                onTap: () => context.push(
+                  Uri(
+                    path: '/spending',
+                    queryParameters: {'transactionType': 'INCOME'},
+                  ).toString(),
+                ),
                 value: income.when(
                   data: (value) => Text(
                     formattedCurrency(value),
@@ -66,7 +158,12 @@ class Summary extends ConsumerWidget {
               SummaryCard(
                 label: 'Expense',
                 emoji: '📈',
-                onTap: () => context.push('/expense'),
+                onTap: () => context.push(
+                  Uri(
+                    path: '/spending',
+                    queryParameters: {'transactionType': 'EXPENSE'},
+                  ).toString(),
+                ),
                 value: expense.when(
                   data: (value) => Text(
                     formattedCurrency(value),
@@ -81,7 +178,7 @@ class Summary extends ConsumerWidget {
               SummaryCard(
                 label: 'Pockets',
                 emoji: '💰',
-                onTap: () => onTabChange(1),
+                onTap: () => widget.onTabChange(1),
                 value: pocketLength.when(
                   data: (value) => Text(
                     '$value',
@@ -96,7 +193,7 @@ class Summary extends ConsumerWidget {
               SummaryCard(
                 label: 'Goals',
                 emoji: '🎯',
-                onTap: () => onTabChange(2),
+                onTap: () => widget.onTabChange(2),
                 value: goalsLength.when(
                   data: (value) => Text(
                     '$value',

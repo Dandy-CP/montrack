@@ -1,18 +1,32 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:go_router/go_router.dart';
+import 'package:montrack/models/auth/auth_model.dart';
 import 'package:montrack/models/wallet/active_wallet_model.dart';
+import 'package:montrack/service/api/auth_api.dart';
 import 'package:montrack/service/api/wallet_api.dart';
 import 'package:montrack/utils/formated_currency.dart';
 import 'package:montrack/widget/elements/skeleton.dart';
 
 class Overview extends ConsumerWidget {
-  const Overview({super.key});
+  const Overview({super.key, required this.onTabChange});
+
+  final void Function(int) onTabChange;
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
     final AsyncValue<ActiveWalletResponse> activeWallet = ref.watch(
       getActiveWalletProvider,
     );
+
+    final AsyncValue<GetLoggedInUserResponse> user = ref.watch(
+      getLoggedUserProvider,
+    );
+
+    final String name = user.value?.data.name ?? '';
+    final String initialName = name.isNotEmpty
+        ? name.split('')[0].toUpperCase()
+        : '';
 
     Widget walletOverview() {
       return activeWallet.when(
@@ -21,11 +35,24 @@ class Overview extends ConsumerWidget {
           crossAxisAlignment: CrossAxisAlignment.start,
           spacing: 10,
           children: [
-            Text(
-              value.data.walletName,
-              style: TextStyle(
-                color: Colors.white,
-                fontWeight: FontWeight.w600,
+            GestureDetector(
+              onTap: () => context.push('/wallet'),
+              child: Row(
+                spacing: 3,
+                children: [
+                  Text(
+                    value.data.walletName,
+                    style: TextStyle(
+                      color: Colors.white,
+                      fontWeight: FontWeight.w600,
+                    ),
+                  ),
+                  Icon(
+                    Icons.keyboard_arrow_down,
+                    color: Colors.white,
+                    size: 20,
+                  ),
+                ],
               ),
             ),
             Text(
@@ -85,13 +112,16 @@ class Overview extends ConsumerWidget {
                   spacing: 20,
                   children: [
                     Icon(Icons.notifications, color: Colors.white),
-                    CircleAvatar(
-                      backgroundColor: Colors.grey.shade400,
-                      child: const Text(
-                        'DC',
-                        style: TextStyle(
-                          color: Colors.black,
-                          fontWeight: FontWeight.bold,
+                    GestureDetector(
+                      onTap: () => onTabChange(3),
+                      child: CircleAvatar(
+                        backgroundColor: Colors.grey.shade400,
+                        child: Text(
+                          initialName,
+                          style: TextStyle(
+                            color: Colors.black,
+                            fontWeight: FontWeight.bold,
+                          ),
                         ),
                       ),
                     ),

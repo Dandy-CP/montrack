@@ -2,6 +2,7 @@ import 'package:dio/dio.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
+import 'package:loader_overlay/loader_overlay.dart';
 import 'package:montrack/service/api/pocket_api.dart';
 import 'package:montrack/utils/formated_currency.dart';
 import 'package:montrack/widget/elements/dialog.dart';
@@ -34,16 +35,12 @@ class PocketCard extends ConsumerStatefulWidget {
 }
 
 class PocketCardState extends ConsumerState<PocketCard> {
-  bool _isPending = false;
-
   @override
   Widget build(BuildContext context) {
     final pocketRequest = ref.watch(pocketRequestProvider.notifier);
 
     void onDeletePocket() async {
-      setState(() {
-        _isPending = true;
-      });
+      context.loaderOverlay.show();
 
       try {
         final response = await pocketRequest.deletePocket(widget.pocketId);
@@ -67,9 +64,7 @@ class PocketCardState extends ConsumerState<PocketCard> {
           );
         }
       } finally {
-        setState(() {
-          _isPending = false;
-        });
+        if (context.mounted) context.loaderOverlay.hide();
       }
     }
 
@@ -104,18 +99,22 @@ class PocketCardState extends ConsumerState<PocketCard> {
                     <PopupMenuEntry<MenuItem>>[
                       PopupMenuItem<MenuItem>(
                         value: MenuItem.detail,
-                        onTap: () {
-                          context.push(
-                            Uri(
-                              path: '/pocket/detail',
-                              queryParameters: {'pocketId': widget.pocketId},
-                            ).toString(),
-                          );
-                        },
+                        onTap: () => context.push(
+                          Uri(
+                            path: '/pocket/detail',
+                            queryParameters: {'pocketId': widget.pocketId},
+                          ).toString(),
+                        ),
                         child: Text('Detail'),
                       ),
                       PopupMenuItem<MenuItem>(
                         value: MenuItem.detail,
+                        onTap: () => context.push(
+                          Uri(
+                            path: '/pocket/edit',
+                            queryParameters: {'pocketId': widget.pocketId},
+                          ).toString(),
+                        ),
                         child: Text('Edit'),
                       ),
                       PopupMenuItem<MenuItem>(
@@ -125,7 +124,6 @@ class PocketCardState extends ConsumerState<PocketCard> {
                             context: context,
                             title: 'Are you sure to delete?',
                             content: 'Your pocket will be permanently deleted',
-                            isPending: _isPending,
                             onYesPressed: () {
                               onDeletePocket();
                             },

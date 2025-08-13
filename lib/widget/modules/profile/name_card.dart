@@ -12,6 +12,7 @@ class NameCard extends ConsumerWidget {
     final AsyncValue<GetLoggedInUserResponse> user = ref.watch(
       getLoggedUserProvider,
     );
+
     final String name = user.value?.data.name ?? '';
     final String initialName = name.isNotEmpty
         ? name.split('')[0].toUpperCase()
@@ -20,7 +21,7 @@ class NameCard extends ConsumerWidget {
     return Column(
       children: [
         Row(
-          crossAxisAlignment: CrossAxisAlignment.start,
+          crossAxisAlignment: CrossAxisAlignment.center,
           spacing: 25,
           children: [
             SizedBox(
@@ -44,7 +45,20 @@ class NameCard extends ConsumerWidget {
                 user.when(
                   data: (value) => Column(
                     crossAxisAlignment: CrossAxisAlignment.start,
-                    children: [Text(value.data.name), Text(value.data.email)],
+                    spacing: 3,
+                    children: [
+                      Text(
+                        value.data.name,
+                        style: TextStyle(
+                          fontSize: 16,
+                          fontWeight: FontWeight.bold,
+                        ),
+                      ),
+                      Text(
+                        value.data.email,
+                        style: TextStyle(color: Colors.grey.shade600),
+                      ),
+                    ],
                   ),
                   error: (error, stack) => Column(
                     crossAxisAlignment: CrossAxisAlignment.start,
@@ -61,17 +75,6 @@ class NameCard extends ConsumerWidget {
                       SkeletonBox(width: 100, height: 20),
                       SkeletonBox(width: 130, height: 20),
                     ],
-                  ),
-                ),
-                TextButton(
-                  onPressed: () {},
-                  style: TextButton.styleFrom(padding: EdgeInsets.all(0)),
-                  child: Text(
-                    'Edit Profile',
-                    style: TextStyle(
-                      color: Color(0xFF3077E3),
-                      fontWeight: FontWeight.w900,
-                    ),
                   ),
                 ),
               ],

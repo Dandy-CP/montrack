@@ -1,7 +1,9 @@
 import 'package:dio/dio.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
-import 'package:montrack/service/api/pocket_api.dart';
+import 'package:go_router/go_router.dart';
+import 'package:loader_overlay/loader_overlay.dart';
+import 'package:montrack/service/api/goals_api.dart';
 import 'package:montrack/utils/formated_currency.dart';
 import 'package:montrack/widget/elements/dialog.dart';
 import 'package:montrack/widget/elements/snackbar.dart';
@@ -31,26 +33,24 @@ class GoalsCard extends ConsumerStatefulWidget {
 }
 
 class PocketCardState extends ConsumerState<GoalsCard> {
-  bool _isPending = false;
-
   @override
   Widget build(BuildContext context) {
-    final pocketRequest = ref.watch(pocketRequestProvider.notifier);
+    final goalsRequest = ref.watch(goalsRequestProvider.notifier);
 
     void onDeleteGoals() async {
-      setState(() {
-        _isPending = true;
-      });
+      context.loaderOverlay.show();
 
       try {
-        final response = await pocketRequest.deletePocket(widget.goalsId);
+        final response = await goalsRequest.deleteGoals(
+          goalsId: widget.goalsId,
+        );
 
-        if (response != null) {
+        if (response.statusCode == 200) {
           if (context.mounted) {
             Navigator.pop(context);
           }
 
-          ref.invalidate(getListPocketProvider(page: 1, limit: 10));
+          ref.invalidate(getListGoalsProvider(page: 1, limit: 10));
         }
       } on DioException catch (error) {
         if (context.mounted) {
@@ -64,9 +64,7 @@ class PocketCardState extends ConsumerState<GoalsCard> {
           );
         }
       } finally {
-        setState(() {
-          _isPending = false;
-        });
+        if (context.mounted) context.loaderOverlay.hide();
       }
     }
 
@@ -111,10 +109,22 @@ class PocketCardState extends ConsumerState<GoalsCard> {
                     <PopupMenuEntry<MenuItem>>[
                       PopupMenuItem<MenuItem>(
                         value: MenuItem.detail,
+                        onTap: () => context.push(
+                          Uri(
+                            path: '/goals/detail',
+                            queryParameters: {'goalsId': widget.goalsId},
+                          ).toString(),
+                        ),
                         child: Text('Detail'),
                       ),
                       PopupMenuItem<MenuItem>(
                         value: MenuItem.detail,
+                        onTap: () => context.push(
+                          Uri(
+                            path: '/goals/edit',
+                            queryParameters: {'goalsId': widget.goalsId},
+                          ).toString(),
+                        ),
                         child: Text('Edit'),
                       ),
                       PopupMenuItem<MenuItem>(
@@ -124,7 +134,6 @@ class PocketCardState extends ConsumerState<GoalsCard> {
                             context: context,
                             title: 'Are you sure to delete?',
                             content: 'Your pocket will be permanently deleted',
-                            isPending: _isPending,
                             onYesPressed: () {
                               onDeleteGoals();
                             },
