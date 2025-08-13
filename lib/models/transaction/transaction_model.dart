@@ -47,7 +47,6 @@ abstract class TransactionSummaryResponse with _$TransactionSummaryResponse {
     @JsonKey(name: "message") required String message,
     @JsonKey(name: "timeStamp") required String timeStamp,
     @JsonKey(name: "data") required SummaryData data,
-    @JsonKey(name: "meta") required Meta meta,
   }) = _TransactionSummaryResponse;
 
   factory TransactionSummaryResponse.fromJson(Map<String, dynamic> json) =>

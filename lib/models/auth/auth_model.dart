@@ -96,10 +96,35 @@ abstract class GetLoggedInUserData with _$GetLoggedInUserData {
     @JsonKey(name: 'user_id') required String userId,
     @JsonKey(name: "name") required String name,
     @JsonKey(name: "email") required String email,
+    @JsonKey(name: 'is_2fa_active') required bool is2FAActive,
     @JsonKey(name: "access_token") required String accessToken,
     @JsonKey(name: "refresh_token") required String refreshToken,
   }) = _GetLoggedInUserData;
 
   factory GetLoggedInUserData.fromJson(Map<String, dynamic> json) =>
       _$GetLoggedInUserDataFromJson(json);
+}
+
+@freezed
+abstract class Enable2FAResponse with _$Enable2FAResponse {
+  const factory Enable2FAResponse({
+    @JsonKey(name: "statusCode") required int statusCode,
+    @JsonKey(name: "message") required String message,
+    @JsonKey(name: "timeStamp") required String timeStamp,
+    @JsonKey(name: "data") required Enabled2FAData data,
+  }) = _Enable2FAResponse;
+
+  factory Enable2FAResponse.fromJson(Map<String, dynamic> json) =>
+      _$Enable2FAResponseFromJson(json);
+}
+
+@freezed
+abstract class Enabled2FAData with _$Enabled2FAData {
+  const factory Enabled2FAData({
+    @JsonKey(name: "qrCode") required String qrCode,
+    @JsonKey(name: 'secret') required String secret,
+  }) = _Enabled2FAData;
+
+  factory Enabled2FAData.fromJson(Map<String, dynamic> json) =>
+      _$Enabled2FADataFromJson(json);
 }

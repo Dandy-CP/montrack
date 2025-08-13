@@ -1,5 +1,4 @@
 import 'package:freezed_annotation/freezed_annotation.dart';
-import 'package:montrack/models/transaction/transaction_model.dart';
 import 'package:montrack/models/wallet/wallet_list_model.dart';
 
 part 'active_wallet_model.freezed.dart';
@@ -29,7 +28,6 @@ abstract class ActiveWalletData with _$ActiveWalletData {
     @JsonKey(name: "created_at") required String createdAt,
     @JsonKey(name: "user_goals") required List<UserGoal> userGoals,
     @JsonKey(name: "user_pocket") required List<UserPocket> userPocket,
-    @JsonKey(name: "summary") required SummaryData summary,
   }) = _ActiveWalletData;
 
   factory ActiveWalletData.fromJson(Map<String, dynamic> json) =>
