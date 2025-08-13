@@ -1,3 +1,4 @@
+import 'package:dio/dio.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:montrack/models/transaction/transaction_model.dart';
 import 'package:montrack/providers/network/network_provider.dart';
@@ -74,16 +75,16 @@ class TransactionRequest extends _$TransactionRequest {
   @override
   FutureOr<void> build() {}
 
-  Future<String?> createTransaction() async {
+  Future<Response<dynamic>> createTransaction(FormData payload) async {
     final response = await ref
         .watch(networkServiceProvider)
-        .post('/transaction/create', data: {});
+        .post(
+          '/transaction/create',
+          data: payload,
+          options: Options(headers: {'Content-Type': 'multipart/form-data'}),
+        );
 
-    if (response.statusCode == 201) {
-      return 'Success create transaction';
-    }
-
-    return null;
+    return response;
   }
 }
 
@@ -92,6 +93,25 @@ Future<TransactionSummaryResponse> getSummaryTransaction(Ref ref) async {
   final response = await ref
       .watch(networkServiceProvider)
       .get('/transaction/summary');
+
+  return TransactionSummaryResponse.fromJson(response.data);
+}
+
+@riverpod
+Future<TransactionSummaryResponse> getTransactionSummary(
+  Ref ref, {
+  String? startDate,
+  String? endDate,
+}) async {
+  final response = await ref
+      .watch(networkServiceProvider)
+      .get(
+        '/transaction/summary',
+        queryParameters: {
+          if (startDate != null) 'startDate': startDate,
+          if (endDate != null) 'endDate': endDate,
+        },
+      );
 
   return TransactionSummaryResponse.fromJson(response.data);
 }

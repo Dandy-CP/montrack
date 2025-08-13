@@ -16,18 +16,37 @@ typedef SignUpPayload = ({String name, String email, String password});
 @riverpod
 Future<void> initialStartUp(Ref ref) async {
   final tokenValue = await ref.watch(secureStorageProvider).get('access_token');
+  final pinValue = await ref.watch(secureStorageProvider).get('user-pin');
 
   final response = await ref
       .watch(networkServiceProvider)
       .get('/auth/logedin-user');
 
-  if (response.statusCode == 200 && tokenValue != null) {
+  if (response.statusCode == 200 && tokenValue != null && pinValue == null) {
     router.replace('/home');
+    return;
+  }
+
+  if (response.statusCode == 200 && tokenValue != null && pinValue != null) {
+    router.replace(
+      Uri(
+        path: '/input-pin',
+        queryParameters: {'title': 'Please input your pin', 'type': 'input'},
+      ).toString(),
+    );
     return;
   }
 }
 
 @Riverpod(keepAlive: true)
+Future<String?> getUserPinStorage(Ref ref) async {
+  final storage = ref.watch(secureStorageProvider);
+  final pin = await storage.get('user-pin');
+
+  return pin;
+}
+
+@riverpod
 Future<GetLoggedInUserResponse> getLoggedUser(Ref ref) async {
   final response = await ref
       .watch(networkServiceProvider)
@@ -37,11 +56,20 @@ Future<GetLoggedInUserResponse> getLoggedUser(Ref ref) async {
 }
 
 @riverpod
+Future<Enable2FAResponse> enable2FA(Ref ref) async {
+  final response = await ref
+      .watch(networkServiceProvider)
+      .post('/auth/enable-2fa');
+
+  return Enable2FAResponse.fromJson(response.data);
+}
+
+@riverpod
 class Auth extends _$Auth {
   @override
   FutureOr<void> build() {}
 
-  Future<AuthLoginResponse> signIn(LoginPayload payload) async {
+  Future<Response<dynamic>> signIn(LoginPayload payload) async {
     final response = await ref
         .watch(networkServiceProvider)
         .post(
@@ -49,7 +77,7 @@ class Auth extends _$Auth {
           data: {"email": payload.email, "password": payload.password},
         );
 
-    return AuthLoginResponse.fromJson(response.data);
+    return response;
   }
 
   Future<AuthSignUpResponse> signUp(SignUpPayload payload) async {
@@ -68,19 +96,73 @@ class Auth extends _$Auth {
   }
 
   Future<String?> signOut() async {
+    final storage = ref.watch(secureStorageProvider);
     final response = await ref
         .watch(networkServiceProvider)
         .post('/auth/logout');
 
     if (response.statusCode == 201) {
-      final storage = ref.watch(secureStorageProvider);
       await storage.delete('access_token');
       await storage.delete('refresh_token');
+      await storage.delete('user-pin');
 
       return 'Success logout';
     }
 
     return null;
+  }
+
+  Future<Response<dynamic>> validate2FA({
+    required Map<String, dynamic> payload,
+  }) async {
+    final response = await ref
+        .watch(networkServiceProvider)
+        .post('/auth/validate-2fa', data: payload);
+
+    return response;
+  }
+
+  Future<Response<dynamic>> verify2FA({
+    required Map<String, dynamic> payload,
+  }) async {
+    final response = await ref
+        .watch(networkServiceProvider)
+        .post('/auth/verify-new-2fa', data: payload);
+
+    return response;
+  }
+
+  Future<Response<dynamic>> disabled2FA({
+    required Map<String, dynamic> payload,
+  }) async {
+    final response = await ref
+        .watch(networkServiceProvider)
+        .post('/auth/disable-2fa', data: payload);
+
+    return response;
+  }
+
+  Future<Response<dynamic>> resetAccount() async {
+    final response = await ref
+        .watch(networkServiceProvider)
+        .post('/auth/reset-account');
+
+    return response;
+  }
+
+  Future<Response<dynamic>> deleteAccount() async {
+    final storage = ref.watch(secureStorageProvider);
+    final response = await ref
+        .watch(networkServiceProvider)
+        .post('/auth/delete-account');
+
+    if (response.statusCode == 201) {
+      await storage.delete('access_token');
+      await storage.delete('refresh_token');
+      await storage.delete('user-pin');
+    }
+
+    return response;
   }
 
   Future handleRefreshToken(
@@ -140,8 +222,7 @@ class Auth extends _$Auth {
         // Continue process with error rejection
         return handler.next(error);
       }
-    } else {
-      // else condition when refresh token is not available
+    } else if (refreshTokenKey == null) {
       if (isHasOnboarding != null && isHasOnboarding) {
         router.replace('/login');
       } else {

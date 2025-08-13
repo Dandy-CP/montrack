@@ -1,3 +1,4 @@
+import 'package:dio/dio.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:montrack/models/pocket/pocket_detail_model.dart';
 import 'package:montrack/models/pocket/pocket_list_model.dart';
@@ -63,13 +64,13 @@ class PocketRequest extends _$PocketRequest {
     return null;
   }
 
-  Future<String?> updatePocket({
+  Future<Response<dynamic>> updatePocket({
     required String pocketId,
     required CreatePocketPayload payload,
   }) async {
     final response = await ref
         .watch(networkServiceProvider)
-        .post(
+        .put(
           '/pocket/update',
           queryParameters: {"pocket_id": pocketId},
           data: {
@@ -80,11 +81,7 @@ class PocketRequest extends _$PocketRequest {
           },
         );
 
-    if (response.statusCode == 201) {
-      return 'Success update pocket';
-    }
-
-    return null;
+    return response;
   }
 
   Future<String?> deletePocket(String pocketId) async {
