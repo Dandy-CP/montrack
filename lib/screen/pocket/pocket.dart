@@ -4,6 +4,7 @@ import 'package:montrack/models/pocket/pocket_list_model.dart';
 import 'package:montrack/service/api/pocket_api.dart';
 import 'package:montrack/widget/elements/skeleton.dart';
 import 'package:montrack/widget/modules/empty_state.dart';
+import 'package:montrack/widget/modules/error_view.dart';
 import 'package:montrack/widget/modules/pocket/pocket_card.dart';
 
 class PocketScreen extends ConsumerWidget {
@@ -55,12 +56,7 @@ class PocketScreen extends ConsumerWidget {
                 .toList(),
           );
         },
-        error: (error, trace) => Column(
-          spacing: 15,
-          children: List.generate(5, (_) {}).map((_) {
-            return SkeletonBox(width: double.infinity, height: 230);
-          }).toList(),
-        ),
+        error: (error, trace) => ErrorView(onTap: () => handleOnRefresh()),
         loading: () => Column(
           spacing: 15,
           children: List.generate(5, (_) {}).map((_) {

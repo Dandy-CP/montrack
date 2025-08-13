@@ -68,7 +68,6 @@ class PocketDetailScreen extends ConsumerWidget {
                     ),
                   ],
                 ),
-
                 Row(
                   spacing: 5,
                   children: [
@@ -101,7 +100,7 @@ class PocketDetailScreen extends ConsumerWidget {
                 ),
                 LinearProgressIndicator(
                   color: Color(0xFF3077E3),
-                  value: 0.5,
+                  value: value.data.pocketAmmount / value.data.pocketSetAmount,
                   minHeight: 8,
                   borderRadius: BorderRadius.circular(10),
                   backgroundColor: Colors.grey.shade200,
@@ -127,6 +126,7 @@ class PocketDetailScreen extends ConsumerWidget {
           }
 
           return Column(
+            spacing: 15,
             children: value
                 .map(
                   (value) => TrxCard(
