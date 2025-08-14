@@ -52,12 +52,13 @@ flutter_native_splash:
   ios: true
   web: false
 
+  color: "#FFFFFF"
   background_image: "assets/background.png"
   image: "assets/logo.png"
   branding: "assets/branding_logo.png"
 
   android_12:
-    color: "#ffffff"
+    color: "#FFFFFF"
     image: "assets/logo.png"
     branding: "assets/branding_logo.png"
 
