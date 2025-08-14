@@ -146,6 +146,7 @@ class _CreatePocketState extends ConsumerState<CreatePocket> {
                         variant: 'multiline',
                         enabled: !_isPending,
                         keyboardType: TextInputType.multiline,
+                        isOptional: true,
                         onSaved: (value) => pocketDescription = value!,
                       ),
                     ],

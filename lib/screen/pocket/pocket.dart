@@ -70,7 +70,12 @@ class PocketScreen extends ConsumerWidget {
       onRefresh: () => handleOnRefresh(),
       child: SingleChildScrollView(
         physics: AlwaysScrollableScrollPhysics(),
-        padding: EdgeInsetsGeometry.directional(top: 20, start: 15, end: 15),
+        padding: EdgeInsetsGeometry.directional(
+          top: 20,
+          start: 15,
+          end: 15,
+          bottom: 150,
+        ),
         child: Column(spacing: 10, children: [listWidgetPocket()]),
       ),
     );
