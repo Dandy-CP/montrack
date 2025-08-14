@@ -10,8 +10,8 @@ class Dialogs {
   }) {
     showDialog(
       context: context,
-      builder: (context) => StatefulBuilder(
-        builder: (context, setState) {
+      builder: (context) => LayoutBuilder(
+        builder: (BuildContext context, BoxConstraints constraints) {
           return AlertDialog(
             title: Text(title),
             content: content != null ? Text(content) : null,
@@ -20,12 +20,18 @@ class Dialogs {
               Button(
                 label: 'No',
                 variant: 'outlined',
-                width: MediaQuery.of(context).size.width * 0.33,
+                textColor: Colors.red,
+                width: constraints.maxWidth * 0.3,
+                style: ButtonStyle(
+                  side: WidgetStateProperty.all(
+                    BorderSide(color: Colors.red, width: 1.5),
+                  ),
+                ),
                 onPressed: () => Navigator.pop(context),
               ),
               Button(
                 label: 'Yes',
-                width: MediaQuery.of(context).size.width * 0.33,
+                width: constraints.maxWidth * 0.3,
                 onPressed: () {
                   if (onYesPressed != null) {
                     onYesPressed();

@@ -10,6 +10,7 @@ class Button extends StatefulWidget {
     this.disabled = false,
     this.style,
     this.isLoading = false,
+    this.textColor = const Color(0xFF3077E3),
   });
 
   final String variant; // default | outlined
@@ -19,6 +20,7 @@ class Button extends StatefulWidget {
   final bool disabled;
   final ButtonStyle? style;
   final bool isLoading;
+  final Color? textColor;
 
   @override
   State<Button> createState() => _ButtonState();
@@ -45,10 +47,7 @@ class _ButtonState extends State<Button> {
                     color: Colors.white,
                     constraints: BoxConstraints(minHeight: 25, minWidth: 25),
                   )
-                : Text(
-                    widget.label,
-                    style: TextStyle(color: Color(0xFF3077E3)),
-                  ),
+                : Text(widget.label, style: TextStyle(color: widget.textColor)),
           ),
         );
 
