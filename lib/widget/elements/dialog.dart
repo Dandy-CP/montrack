@@ -20,12 +20,12 @@ class Dialogs {
               Button(
                 label: 'No',
                 variant: 'outlined',
-                width: 130,
+                width: MediaQuery.of(context).size.width * 0.33,
                 onPressed: () => Navigator.pop(context),
               ),
               Button(
                 label: 'Yes',
-                width: 130,
+                width: MediaQuery.of(context).size.width * 0.33,
                 onPressed: () {
                   if (onYesPressed != null) {
                     onYesPressed();
