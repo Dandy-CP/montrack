@@ -5,6 +5,7 @@ import 'package:loader_overlay/loader_overlay.dart';
 import 'package:montrack/config/router.dart';
 import 'package:montrack/config/theme.dart';
 import 'package:montrack/providers/provider_observer.dart';
+import 'package:montrack/widget/modules/loading_overlay.dart';
 
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
@@ -12,7 +13,13 @@ void main() async {
   runApp(
     ProviderScope(
       observers: [ProviderObservers()],
-      child: GlobalLoaderOverlay(child: Index()),
+      child: GlobalLoaderOverlay(
+        overlayColor: Colors.white70.withValues(alpha: 0.5),
+        overlayWidgetBuilder: (_) {
+          return LoadingOverlay();
+        },
+        child: Index(),
+      ),
     ),
   );
 }
