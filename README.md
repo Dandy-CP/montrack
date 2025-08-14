@@ -5,6 +5,8 @@
 # Montrack
 This Project for Portfolio Purpose
 
+[Demo App](https://github.com/Dandy-CP/montrack/releases/download/release/app-release.apk)
+
 ## Installation
 
 Install Project with flutter pub:
