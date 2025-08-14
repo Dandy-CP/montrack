@@ -54,7 +54,7 @@ class _SummaryState extends ConsumerState<Summary> {
 
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
-      spacing: 25,
+      spacing: 10,
       children: [
         Row(
           mainAxisAlignment: MainAxisAlignment.spaceBetween,
@@ -129,83 +129,85 @@ class _SummaryState extends ConsumerState<Summary> {
             ),
           ],
         ),
-        SizedBox(
-          width: double.infinity,
-          child: Wrap(
-            alignment: WrapAlignment.spaceBetween,
-            runSpacing: 10,
-            children: [
-              SummaryCard(
-                label: 'Income',
-                emoji: '📉',
-                onTap: () => context.push(
-                  Uri(
-                    path: '/spending',
-                    queryParameters: {'transactionType': 'INCOME'},
-                  ).toString(),
-                ),
-                value: income.when(
-                  data: (value) => Text(
-                    formattedCurrency(value),
-                    style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
-                  ),
-                  error: (error, stack) => SkeletonBox(width: 100, height: 20),
-                  loading: () => SkeletonBox(width: 100, height: 20),
-                  skipLoadingOnRefresh: false,
-                ),
-              ),
 
-              SummaryCard(
-                label: 'Expense',
-                emoji: '📈',
-                onTap: () => context.push(
-                  Uri(
-                    path: '/spending',
-                    queryParameters: {'transactionType': 'EXPENSE'},
-                  ).toString(),
-                ),
-                value: expense.when(
-                  data: (value) => Text(
-                    formattedCurrency(value),
-                    style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
-                  ),
-                  error: (error, stack) => SkeletonBox(width: 100, height: 20),
-                  loading: () => SkeletonBox(width: 100, height: 20),
-                  skipLoadingOnRefresh: false,
-                ),
+        Row(
+          mainAxisAlignment: MainAxisAlignment.spaceBetween,
+          children: [
+            SummaryCard(
+              label: 'Income',
+              emoji: '📉',
+              onTap: () => context.push(
+                Uri(
+                  path: '/spending',
+                  queryParameters: {'transactionType': 'INCOME'},
+                ).toString(),
               ),
+              value: income.when(
+                data: (value) => Text(
+                  formattedCurrency(value),
+                  style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
+                ),
+                error: (error, stack) => SkeletonBox(width: 100, height: 20),
+                loading: () => SkeletonBox(width: 100, height: 20),
+                skipLoadingOnRefresh: false,
+              ),
+            ),
 
-              SummaryCard(
-                label: 'Pockets',
-                emoji: '💰',
-                onTap: () => widget.onTabChange(1),
-                value: pocketLength.when(
-                  data: (value) => Text(
-                    '$value',
-                    style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
-                  ),
-                  error: (error, stack) => SkeletonBox(width: 100, height: 20),
-                  loading: () => SkeletonBox(width: 100, height: 20),
-                  skipLoadingOnRefresh: false,
-                ),
+            SummaryCard(
+              label: 'Expense',
+              emoji: '📈',
+              onTap: () => context.push(
+                Uri(
+                  path: '/spending',
+                  queryParameters: {'transactionType': 'EXPENSE'},
+                ).toString(),
               ),
+              value: expense.when(
+                data: (value) => Text(
+                  formattedCurrency(value),
+                  style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
+                ),
+                error: (error, stack) => SkeletonBox(width: 100, height: 20),
+                loading: () => SkeletonBox(width: 100, height: 20),
+                skipLoadingOnRefresh: false,
+              ),
+            ),
+          ],
+        ),
 
-              SummaryCard(
-                label: 'Goals',
-                emoji: '🎯',
-                onTap: () => widget.onTabChange(2),
-                value: goalsLength.when(
-                  data: (value) => Text(
-                    '$value',
-                    style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
-                  ),
-                  error: (error, stack) => SkeletonBox(width: 100, height: 20),
-                  loading: () => SkeletonBox(width: 100, height: 20),
-                  skipLoadingOnRefresh: false,
+        Row(
+          mainAxisAlignment: MainAxisAlignment.spaceBetween,
+          children: [
+            SummaryCard(
+              label: 'Pockets',
+              emoji: '💰',
+              onTap: () => widget.onTabChange(1),
+              value: pocketLength.when(
+                data: (value) => Text(
+                  '$value',
+                  style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
                 ),
+                error: (error, stack) => SkeletonBox(width: 100, height: 20),
+                loading: () => SkeletonBox(width: 100, height: 20),
+                skipLoadingOnRefresh: false,
               ),
-            ],
-          ),
+            ),
+
+            SummaryCard(
+              label: 'Goals',
+              emoji: '🎯',
+              onTap: () => widget.onTabChange(2),
+              value: goalsLength.when(
+                data: (value) => Text(
+                  '$value',
+                  style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
+                ),
+                error: (error, stack) => SkeletonBox(width: 100, height: 20),
+                loading: () => SkeletonBox(width: 100, height: 20),
+                skipLoadingOnRefresh: false,
+              ),
+            ),
+          ],
         ),
       ],
     );

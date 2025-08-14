@@ -46,16 +46,10 @@ class PocketCardState extends ConsumerState<PocketCard> {
         final response = await pocketRequest.deletePocket(widget.pocketId);
 
         if (response != null) {
-          if (context.mounted) {
-            Navigator.pop(context);
-          }
-
           ref.invalidate(getListPocketProvider(page: 1, limit: 10));
         }
       } on DioException catch (error) {
         if (context.mounted) {
-          Navigator.pop(context);
-
           SnackBars.show(
             context: context,
             message:

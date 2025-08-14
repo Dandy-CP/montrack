@@ -46,16 +46,10 @@ class PocketCardState extends ConsumerState<GoalsCard> {
         );
 
         if (response.statusCode == 200) {
-          if (context.mounted) {
-            Navigator.pop(context);
-          }
-
           ref.invalidate(getListGoalsProvider(page: 1, limit: 10));
         }
       } on DioException catch (error) {
         if (context.mounted) {
-          Navigator.pop(context);
-
           SnackBars.show(
             context: context,
             message:
@@ -133,7 +127,7 @@ class PocketCardState extends ConsumerState<GoalsCard> {
                           Dialogs.show(
                             context: context,
                             title: 'Are you sure to delete?',
-                            content: 'Your pocket will be permanently deleted',
+                            content: 'Your goals will be permanently deleted',
                             onYesPressed: () {
                               onDeleteGoals();
                             },

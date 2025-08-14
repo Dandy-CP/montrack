@@ -22,7 +22,7 @@ class _SummaryCardState extends State<SummaryCard> {
   @override
   Widget build(BuildContext context) {
     return Container(
-      width: 180,
+      width: MediaQuery.of(context).size.width * 0.44,
       height: 136,
       decoration: BoxDecoration(
         color: Colors.white,
