@@ -53,12 +53,14 @@ flutter_native_splash:
   web: false
 
   color: "#FFFFFF"
+  color_dark: "#FFFFFF"
   background_image: "assets/background.png"
   image: "assets/logo.png"
   branding: "assets/branding_logo.png"
 
   android_12:
     color: "#FFFFFF"
+    color_dark: "#FFFFFF"
     image: "assets/logo.png"
     branding: "assets/branding_logo.png"
 
