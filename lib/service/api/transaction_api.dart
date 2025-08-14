@@ -67,6 +67,8 @@ class TransactionListRequest extends _$TransactionListRequest {
         meta: newItems.meta,
       ),
     );
+
+    _isLoadingNextPage = false;
   }
 }
 
@@ -86,15 +88,6 @@ class TransactionRequest extends _$TransactionRequest {
 
     return response;
   }
-}
-
-@riverpod
-Future<TransactionSummaryResponse> getSummaryTransaction(Ref ref) async {
-  final response = await ref
-      .watch(networkServiceProvider)
-      .get('/transaction/summary');
-
-  return TransactionSummaryResponse.fromJson(response.data);
 }
 
 @riverpod

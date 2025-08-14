@@ -46,7 +46,7 @@ Future<String?> getUserPinStorage(Ref ref) async {
   return pin;
 }
 
-@riverpod
+@Riverpod(keepAlive: true)
 Future<GetLoggedInUserResponse> getLoggedUser(Ref ref) async {
   final response = await ref
       .watch(networkServiceProvider)
@@ -76,6 +76,9 @@ class Auth extends _$Auth {
           '/auth/signin',
           data: {"email": payload.email, "password": payload.password},
         );
+
+    // Invalidate logged user when login to ensure updated data
+    ref.invalidate(getLoggedUserProvider);
 
     return response;
   }
