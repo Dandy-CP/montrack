@@ -1,16 +1,42 @@
-# montrack
+<p align="center">
+  <img src='./assets/images/MontrackLogo.png' height="100" />
+</p>
 
-A new Flutter project.
+# Montrack
+This Project for Portfolio Purpose
 
-## Getting Started
+## Installation
 
-This project is a starting point for a Flutter application.
+Install Project with flutter pub:
 
-A few resources to get you started if this is your first Flutter project:
+```bash
+  flutter pub get
+```
 
-- [Lab: Write your first Flutter app](https://docs.flutter.dev/get-started/codelab)
-- [Cookbook: Useful Flutter samples](https://docs.flutter.dev/cookbook)
+Generate needed files with build runner:
 
-For help getting started with Flutter development, view the
-[online documentation](https://docs.flutter.dev/), which offers tutorials,
-samples, guidance on mobile development, and a full API reference.
+```bash
+  dart run build_runner build
+```
+
+Run dev application:
+
+```bash
+  flutter run
+```
+
+## Tech Stack
+- Dart
+- Flutter
+- Riverpod
+- Go Router
+- Dio
+- Freezed
+
+## Backend Service
+https://github.com/Dandy-CP/montrack-service
+
+## Design App
+[![Figma](https://github.com/user-attachments/assets/370e0be0-e0fd-4505-b357-6bae3bceb32c)](https://www.figma.com/community/file/1290594896755762311/montrack-fun-money-tracker-app)
+
+
