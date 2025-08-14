@@ -80,12 +80,18 @@ class _SpendingScreenState extends ConsumerState<SpendingScreen> {
 
               if (value.data.isEmpty) EmptyState(message: 'No transaction yet'),
 
-              if (!value.meta.isLastPage && value.data.length <= 10)
+              if (!value.meta.isLastPage)
                 Column(
                   spacing: 15,
                   children: List.generate(2, (_) {}).map((_) {
                     return SkeletonBox(width: double.infinity, height: 100);
                   }).toList(),
+                ),
+
+              if (value.meta.isLastPage && value.data.length > 10)
+                Text(
+                  'End of transaction',
+                  style: TextStyle(fontWeight: FontWeight.bold),
                 ),
             ],
           );
@@ -107,7 +113,9 @@ class _SpendingScreenState extends ConsumerState<SpendingScreen> {
 
     return Scaffold(
       appBar: AppBarWidget(
-        title: widget.transactionType.toLowerCase(),
+        title:
+            widget.transactionType.split('')[0].toUpperCase() +
+            widget.transactionType.substring(1).toLowerCase(),
         showLeading: true,
         onBack: () {
           context.pop();

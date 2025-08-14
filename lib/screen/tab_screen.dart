@@ -49,6 +49,7 @@ class _TabScreenState extends State<TabScreen> {
     ];
 
     return Scaffold(
+      extendBody: true,
       body: Padding(
         padding: EdgeInsetsGeometry.directional(bottom: 20),
         child: screen[_tabIndex],

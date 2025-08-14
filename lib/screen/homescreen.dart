@@ -31,6 +31,7 @@ class Homescreen extends ConsumerWidget {
                 top: 20,
                 start: 20,
                 end: 20,
+                bottom: 150,
               ),
               child: Column(
                 spacing: 20,
