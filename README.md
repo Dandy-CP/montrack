@@ -33,6 +33,9 @@ Run dev application:
 - Dio
 - Freezed
 
+## Backend Service
+https://github.com/Dandy-CP/montrack-service
+
 ## Design App
 [![Figma](https://github.com/user-attachments/assets/370e0be0-e0fd-4505-b357-6bae3bceb32c)](https://www.figma.com/community/file/1290594896755762311/montrack-fun-money-tracker-app)
 
